@@ -1,21 +1,63 @@
-// Mochila.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
+#include "ZonaFranca.h" // Le pido instancias de Ambiente y de Algoritmo..
+#include "Poblacion.h" // Poblacion de criaturas 
+#include <ctime>
 #include "pch.h"
-#include <iostream>
+#define _MAX_CRIATURAS 100;
+int main(int argn, char ** argv) {
+	if (argn > 3) {
+		char * nombreAlgoritmo = argv[1];
+		char * nombreCriatura = argv[2];
+		char * cantidadCriaturasString = argv[3];
+		int cantidadCriaturas = 0;
 
-int main()
-{
-    std::cout << "Hello World!\n"; 
+		cantidadCriaturas = atoi(cantidadCriaturasString);
+
+
+		ZonaFranca area51;
+		srand(time(0));
+
+		Ambiente * ambientePtr = area51.nuevoAmbiente(nombreCriatura, cantidadCriaturas);
+		Algoritmo * algoritmoPtr = area51.nuevoAlgoritmo(nombreAlgoritmo);
+		if (!ambientePtr || !algoritmoPtr) {
+			cerr << "Debe proporcionar un nombre de criatura y algoritmos validos" << endl;
+			if (ambientePtr) {
+				delete ambientePtr;
+			}
+			if (algoritmoPtr) {
+				delete ambientePtr;
+			}
+		}
+		else {
+			cout << "Algoritmo: " << nombreAlgoritmo << " Criatura: " << nombreCriatura << endl;
+
+			algoritmoPtr->asignar(ambientePtr);
+			Poblacion * poblacionInicialPtr = ambientePtr->crearPoblacionInicial();
+
+			// Algoritmo no puede modificar la poblacion inicial
+			cout << "POBLACION INICIAL " << endl;
+			cout << poblacionInicialPtr;
+			cout << endl;
+
+			cout << "Cantidad de criaturas: " << cantidadCriaturas << endl;
+			Poblacion * poblacionFinalPtr = algoritmoPtr->evolucionar(poblacionInicialPtr);
+
+
+			// Algoritmo no puede modificar la poblacion inicial
+			cout << "POBLACION FINAL " << endl;
+			cout << poblacionFinalPtr;
+			cout << endl;
+
+			if (poblacionInicialPtr) {
+				delete poblacionInicialPtr;
+			}
+			if (poblacionFinalPtr) {
+				delete poblacionFinalPtr;
+			}
+		}
+	}
+	else {
+
+		cout << "Uso: " << argv[0] << " nombreAlgoritmo nombreCriatura cantidadDeCriaturas" << endl;
+	}
+	return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
